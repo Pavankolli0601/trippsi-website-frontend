@@ -82,6 +82,7 @@
       setGridState('empty', 'No products in this category.');
       return;
     }
+    productGrid.classList.remove('products-state');
     productGrid.innerHTML = filtered.map(renderProductCard).join('');
     productGrid.querySelectorAll('.pcat-card').forEach(function (el, i) {
       el.style.animationDelay = (i * 0.05) + 's';
