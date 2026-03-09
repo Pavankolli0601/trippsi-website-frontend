@@ -6,6 +6,21 @@
   const $ = function (id) { return document.getElementById(id); };
   const productGrid = $('productGrid');
   const categoryTabs = $('categoryTabs');
+  const promoBanner = $('promoBanner');
+
+  function renderPromoBanner(store) {
+    if (!promoBanner) return;
+    var active = store && (store.promo_active === '1' || store.promo_active === true);
+    var text = (store && store.promo_banner) ? String(store.promo_banner).trim() : '';
+    if (!active || !text) {
+      promoBanner.classList.remove('visible');
+      promoBanner.innerHTML = '';
+      return;
+    }
+    var escaped = escapeHtml(text);
+    promoBanner.innerHTML = '<div class="promo-banner-inner"><p class="promo-banner-text">' + escaped + '</p></div>';
+    promoBanner.classList.add('visible');
+  }
 
   function setGridState(state, message) {
     if (!productGrid) return;
@@ -108,6 +123,10 @@
   }
 
   function init() {
+    fetch(API_BASE + '/api/store').then(function (r) { return r.ok ? r.json() : null; }).then(function (store) {
+      renderPromoBanner(store);
+    }).catch(function () { if (promoBanner) { promoBanner.classList.remove('visible'); promoBanner.innerHTML = ''; } });
+
     if (!productGrid) return;
     setGridState('loading');
     Promise.all([
